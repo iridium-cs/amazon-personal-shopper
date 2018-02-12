@@ -15,12 +15,12 @@ const http = require('http');
 const server = http.createServer(app);
 const io = require('socket.io').listen(server);
 
-// ROUTERS - FOR API 
+// ROUTERS - FOR API
 const amazonRouter = require('./routers/amazonRouter');
 
 // DATABASE
 const mongoose = require('mongoose');
-const mongoURI = 'mongodb://localhost/work_engine';
+const mongoURI = 'mongodb://superuser:supersecret@ds231758.mlab.com:31758/amazon-personal-shopper';
 mongoose.connect(mongoURI);
 
 // DEFAULT PATH FOR STATIC FILES - SERVES INDEX.HTML
@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, './../client')));
 // ROUTES
 app.use('/api/amazon', amazonRouter);
 
-// INTERCEPTS ALL STRAY REQUESTS 
+// INTERCEPTS ALL STRAY REQUESTS
 app.all('*', (req, res, next) => {
   console.log('catch all on the root');
   err = new Error('index.js - default catch all route - not found');
