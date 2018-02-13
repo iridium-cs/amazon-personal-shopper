@@ -1,20 +1,21 @@
 class AmazonProductsFinderDisplay {
-
   constructor(amazonProductsPresenter) {
     this.amazonProductsPresenter = amazonProductsPresenter;
     this.found = [];
   }
 
   init() {
-    this.amazonProductsFinderDisplayContainer = $('#amazonProductsFinderDisplayContainer');
+    this.amazonProductsFinderDisplayContainer = $(
+      "#amazonProductsFinderDisplayContainer"
+    );
     this.productFinderCreate();
 
-    this.addProductButton = $('#addProduct');
+    this.addProductButton = $("#addProduct");
     this.productFinderEventsInit();
   }
 
   productFinderCreate() {
-    this.amazonProductsFinderDisplayContainer.html('');
+    this.amazonProductsFinderDisplayContainer.html("");
     let str = `
       <h2>Products Finder</h2>
       <div id="amazonProductsFinder">
@@ -35,13 +36,15 @@ class AmazonProductsFinderDisplay {
   }
 
   productFinderEventsInit() {
-    $('#addProduct').click((e) => {
+    $("#addProduct").click(e => {
       this.productFinderMakeRow();
     });
-    $('#findTopProducts').click((e) => {
+    $("#findTopProducts").click(e => {
       const products = this.helper_createProductsArray();
       if (products.length) {
-        this.amazonProductsPresenter.productsFinderDisplayEvent_findTopProducts(products);
+        this.amazonProductsPresenter.productsFinderDisplayEvent_findTopProducts(
+          products
+        );
       }
     });
   }
@@ -61,31 +64,52 @@ class AmazonProductsFinderDisplay {
       <div class="column centerText"><input class="productDelete" type="checkbox" /></div>
     </div>
     `;
-    $('#productFinderProducts').append(str);
+    $("#productFinderProducts").append(str);
   }
 
   productFinderInitFormRowEvents() {
-    $('.productFormRow .productDelete').click(e => {
-      $(e.target).parent().parent().remove();
+    $(".productFormRow .productDelete").click(e => {
+      $(e.target)
+        .parent()
+        .parent()
+        .remove();
     });
   }
 
   // helper_createProductAsinsArray - loops thru the table and gathers the hidden asin values into an array
   helper_createProductsArray() {
     let products = [];
-    let productRows = $('#productFinderProducts .productFormRow').length;
+    let productRows = $(".productFormRow").length;
     for (let i = 1; i <= productRows; i++) {
-      let product = {};
-      product.keyword = $('#productFinderProducts .productFormRow:nth-child(' + i + ') .productKeyword').val();
-      product.minPrice = $('#productFinderProducts .productFormRow:nth-child(' + i + ') .productMinPrice').val();
-      product.maxPrice = $('#productFinderProducts .productFormRow:nth-child(' + i + ') .productMaxPrice').val();
-      product.starRating = $('#productFinderProducts .productFormRow:nth-child(' + i + ') .productStarRating').val();
-      // console.log(`product: ${product}`);
-      products.push(product);
+      let keywordArr = $(
+        "#productFinderProducts .productFormRow:nth-child(" +
+          i +
+          ") .productKeyword"
+      )
+        .val()
+        .split(",");
+      for (let prod of keywordArr) {
+        let product = {};
+        product.keyword = prod;
+        product.minPrice = $(
+          "#productFinderProducts .productFormRow:nth-child(" +
+            i +
+            ") .productMinPrice"
+        ).val();
+        product.maxPrice = $(
+          "#productFinderProducts .productFormRow:nth-child(" +
+            i +
+            ") .productMaxPrice"
+        ).val();
+        product.starRating = $(
+          "#productFinderProducts .productFormRow:nth-child(" +
+            i +
+            ") .productStarRating"
+        ).val();
+        products.push(product);
+      }
     }
+    console.log(products);
     return products;
   }
-
-
-
 }
