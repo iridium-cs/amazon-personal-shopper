@@ -2,6 +2,7 @@ class AmazonProductsFinderDisplay {
 
   constructor(amazonProductsPresenter) {
     this.amazonProductsPresenter = amazonProductsPresenter;
+    this.found = [];
   }
 
   init() {
@@ -17,7 +18,7 @@ class AmazonProductsFinderDisplay {
     let str = `
       <h2>Products Finder</h2>
       <div id="amazonProductsFinder">
-        <div id="productFinderHeaders" class="tableHeader columns">  
+        <div id="productFinderHeaders" class="tableHeader columns">
             <div class="column is-one-third"><h5>Keyword</h5></div>
             <div class="column centerText"><h5>Min Price</h5></div>
             <div class="column centerText"><h5>Max Price</h5></div>
