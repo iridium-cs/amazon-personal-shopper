@@ -16,6 +16,10 @@ class AmazonProductsPresenter {
         this.apd = new AmazonProductsDisplay(this);
         this.apd.init();
         $('#amazonProductsDisplayContainer').hide();
+
+        // CREATE AN INSTANCE OF - FavoritesDisplay
+        // this.fd = new FavoritesDisplay(this);
+        // this.fd.init();
     }
 
 //////////////////////////////////////////

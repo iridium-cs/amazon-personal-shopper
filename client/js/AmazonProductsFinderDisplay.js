@@ -24,7 +24,7 @@ class AmazonProductsFinderDisplay {
             <div class="column centerText"><h5>Min Price</h5></div>
             <div class="column centerText"><h5>Max Price</h5></div>
             <div class="column centerText"><h5>Stars</h5></div>
-            <div class="column centerText"><h5>Remove</h5></div>
+            <div class="column centerText"><h5>Remove from Search</h5></div>
         </div>
         <div id="productFinderProducts" class="tableBody"></div>
         <div id="productFinderFooters" class="tableFooter">

@@ -5,6 +5,7 @@ const app = express();
 // PASSPORT OAUTH
 const passport = require('passport');
 const AmazonStrategy = require('passport-amazon').Strategy;
+// Obtained by registering with Amazon:
 const AMAZON_CLIENT_ID = 'amzn1.application-oa2-client.665551daaad84ee2ba6a3c76f044d4df';
 const AMAZON_CLIENT_SECRET = '6ef5dcd70d54bcffa23da1a79caa01ea2799823452d2377b39851ce581de9a0c';
 
@@ -12,7 +13,6 @@ const AMAZON_CLIENT_SECRET = '6ef5dcd70d54bcffa23da1a79caa01ea2799823452d2377b39
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
-
 passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
@@ -22,26 +22,23 @@ passport.use(new AmazonStrategy({
   clientID: AMAZON_CLIENT_ID,
   clientSecret: AMAZON_CLIENT_SECRET,
   callbackURL: "http://localhost:3000/auth/amazon/callback"
-  // callbackURL: "http://127.0.0.1:3000/auth/amazon/callback"
-},
-function(accessToken, refreshToken, profile, done) {
-  process.nextTick(function () {
-    // To do: associate the Amazon account with a user record in the database, and return that user.
-    return done(null, profile);
-  });
-}
+  }, function(accessToken, refreshToken, profile, done) {
+    process.nextTick(function () {
+      // To do: associate the Amazon account with a user record in the database, and return that user.
+      // Find the user in the db, or, if they are already there, create the user in the db.
+      // Return the user data from the db
+      // console.log(profile._json.user_id);
+      return done(null, profile._json.user_id);
+    });
+  }
 ));
 
 // MIDDLEWARE -FOR PASSPORT AUTHENTICATION
-const util = require('util');
-const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
-const methodOverride = require('method-override');
+// const cookieParser = require('cookie-parser');
 const session = require('express-session');
-app.use(morgan('combined'));
-app.use(cookieParser());
-app.use(methodOverride());
-app.use(session({ secret: 'keyboard cat' }));
+// app.use(cookieParser());
+// User session with the encryption 'secret', hold off on assigning cookie until login, set expiration on session cookie
+app.use(session({ secret: 'keyboard cat', saveUninitialized: false, cookie: {maxAge: 10000000000} }));
 
 // MIDDLEWARE - FOR PARSING OF FORMS AND JSON
 const bodyParser = require('body-parser');
@@ -54,7 +51,7 @@ const path = require('path');
 // WEB SOCKETS - AND RELATED DEPENDENCIES
 const http = require('http');
 const server = http.createServer(app);
-const io = require('socket.io').listen(server);
+// const io = require('socket.io').listen(server);
 
 // ROUTERS - FOR API
 const amazonRouter = require('./routers/amazonRouter');
@@ -64,22 +61,23 @@ const mongoose = require('mongoose');
 const mongoURI = 'mongodb://superuser:supersecret@ds231758.mlab.com:31758/amazon-personal-shopper';
 mongoose.connect(mongoURI);
 
-// DEFAULT PATH FOR STATIC FILES - SERVES INDEX.HTML
+// Use passport
 app.use(passport.initialize());
+// Passport will automatically generate a session cookie upon login
 app.use(passport.session());
-// app.use(app.router);
+// DEFAULT PATH FOR STATIC FILES - SERVES INDEX.HTML
 app.use(express.static(path.join(__dirname, './../client/')));
 
-// On "Login with Amazon" click, we redirect here
+// On "Login with Amazon" click, redirect here. Amazon gives the user an auth code.
 app.get('/auth/amazon',
-  passport.authenticate('amazon', { scope: ['profile', 'postal_code'] }),
+  passport.authenticate('amazon', { scope: ['profile'] }),
   function(req, res){
-    // The request will be redirected to Amazon for authentication, so this
-    // function will not be called.
+    // Because we are using OAuth, this function will not be called.
   })
 
+// The user provides the server with the auth code, which the server gives to Amazon in exchange for a token.
 app.get('/auth/amazon/callback', 
-  passport.authenticate('amazon', { failureRedirect: '/login' }),
+  passport.authenticate('amazon', { failureRedirect: '/'}),
   function(req, res) {
     res.redirect('/homepage');
   }
@@ -91,18 +89,18 @@ app.get('/logout', function(req, res){
   res.redirect('/');
 });
 
+// Middleware to verify authentication before granting access to the homepage
+// req.isAuthenticated() checks for the existence of a session
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
-  res.redirect('/login');
+  res.redirect('/');
 }
 
-app.get('/logout', function(req, res){
-  req.logout();
-  res.redirect('/');
-});
 
 // ONCE LOGGED IN: ROUTES
-app.get('/homepage', (req,res) => res.sendFile(path.resolve(__dirname + '/../client/home.html')));
+app.get('/homepage', ensureAuthenticated, 
+  (req,res) => { console.log(req.session);
+    res.sendFile(path.resolve(__dirname + '/../client/home.html'))});
 
 app.use('/api/amazon', amazonRouter);
 

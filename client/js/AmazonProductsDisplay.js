@@ -29,8 +29,8 @@ class AmazonProductsDisplay {
             <div class="column is-one-third"><h5>Description</h5></div>
             <div class="column centerText"><h5>Price</h5></div>
             <div class="column centerText"><h5>Stars</h5></div>
-            <div class="column centerText"><h5>Reviews</h5></div>
             <div class="column centerText"><h5>Add to Order</h5></div>
+            <div class="column centerText"><h5>Add to Favorites</h5></div>
         </div>
 
         <div class="columns filter">
@@ -79,8 +79,8 @@ class AmazonProductsDisplay {
               <div class="column is-one-third"><a target="_blank" href="${product.url}">${product.name}</a></div>
               <div class="column centerText">$${product.price}</div>
               <div class="column centerText">${product.stars}</div>
-              <div class="column centerText">${product.reviews}</div>
               <div class="column centerText"><input class="productSelected" type="checkbox" /><input type="hidden" class="asin" value="${product.asin}" /></div>
+              <div class="column centerText"><input class="productFavorited" type="checkbox" /><input type="hidden" class="asin" value="${product.asin}" /></div>
             </div>
             `;
             this.productsDisplayProducts.append(str).fadeIn(200 + i * 50);
@@ -107,7 +107,6 @@ class AmazonProductsDisplay {
               <div class="column is-one-third"><a target="_blank" href="${product.url}">${product.name}</a></div>
               <div class="column centerText">$${product.price}</div>
               <div class="column centerText">${product.stars}</div>
-              <div class="column centerText">${product.reviews}</div>
               <div class="column centerText"><input class="productSelected" type="checkbox" /><input type="hidden" class="asin" value="${product.asin}" /></div>
             </div>
             `;
