@@ -7,8 +7,8 @@ const amazonController = {};
 
 // THIS FUNCTION REQUEST PAGES FROM AMAZON USING THE URL PROVIDED IT. IT THEN SCRAPES THE PAGE
 amazonController.getProductsHtml = (req, res, next) => {
-    
-    const url = req.body.url; 
+
+    const url = req.body.url;
     console.log('amazonController ===============', req.body);
     if(url){
     request(url, (error, response, html) => {
@@ -31,8 +31,8 @@ amazonController.getProductsHtml = (req, res, next) => {
 }
 
 // THIS FUNCTION LOADS DOWNLOADED FILES WHICH ARE GOOD IF AMAZON BLOCKS YOU (sameple files in the amazonOptions folder)
-amazonController.getProductsHtmlLocal = (req, res, next) => { 
-    const url = '/amazonOptions/pens.html'; 
+amazonController.getProductsHtmlLocal = (req, res, next) => {
+    const url = '/amazonOptions/pens.html';
     fs.readFile(__dirname + url, function read(error, html) {
         if (error) {
             err = new Error(`Error reading file`);
@@ -52,6 +52,11 @@ amazonController.createProductsObjFromHtml = ($) => {
             let name = $('#result_' + i + ' h2').text();
             let asin = $('#result_' + i).attr('data-asin');
             let url = $('#result_' + i + ' h2').parent().attr('href');
+            //console.log('UUUUURRRRRLLLLL', url);
+            if (!url) {
+              console.log('failed to load URL');
+              break;
+            }
             let urlStart = url.indexOf('www.amazon.com');
             url = 'http://' + unescape(url.slice(urlStart));
             let imageUrl = $('#result_' + i + ' .s-access-image').attr('src');

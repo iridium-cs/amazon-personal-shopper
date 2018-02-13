@@ -7,17 +7,17 @@ const dbController = require('../controllers/dbController');
 const amazonController = require('../controllers/amazonController');
 
 // ROUTE RETRIEVES - LIVE DATA FROM AMAZON BASED ON PASSED IN URL VALUE VIA JSON
-router.post('/go', 
+router.post('/go',
   amazonController.getProductsHtml,
   dbController.save,
   (req, res) => {
-    console.log(`/go - about to return: ${res.locals.products}`);
+    //console.log(`/go - about to return: ${res.locals.products}`);
     res.status(200).json(res.locals.products)
   }
 );
 
 // ROUTE RETRIEVES - STATIC DATA FROM FILES IN /server/controllers/amazonOptions FOLDER
-router.post('/go/local/', 
+router.post('/go/local/',
   amazonController.getProductsHtmlLocal,
   dbController.save,
   (req, res) => {
